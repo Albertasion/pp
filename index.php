@@ -1,4 +1,7 @@
 <?php
+
+use function PHPSTORM_META\type;
+
 ini_set('error_reporting', E_ALL);
 ini_set('display_errors', 1);
 ini_set('max_execution_time', 0);
@@ -69,7 +72,11 @@ return $output;
 //           }   
 //       }
 
-
+function dom ($responce) {
+  $document = phpQuery::newDocument($responce);
+  $all_links_product = $document->find('.product_brief_table')->find('a.pb_product_name');
+  return $all_links_product;
+}
 
 
   $sql = "SELECT * FROM pagination_links";
@@ -78,17 +85,15 @@ $result = $conn->query($sql);
   
   while ($row = $result->fetch_assoc()){
     $row_cnt = $result->num_rows;
-   echo $row_cnt.'<br>';
-
 $page_links_pagin = ($row['pagin_links']);
-echo $page_links_pagin;
+if ($page_links_pagin == 'https://strument.com.ua/category/zapchasti-al-ko/page1618') break; 
+echo '<b>'.$page_links_pagin.'</b><br>';
 $responce = request($page_links_pagin);
-$document = phpQuery::newDocument($responce);
-$all_links_product = pq('.product_brief_table')->find('a.pb_product_name');
+$all_links_product = dom($responce);
 foreach ($all_links_product as $links) {
   $pqlinks_product = pq($links)->attr('href');
   $full_links_product = 'https://strument.com.ua' . $pqlinks_product;
-  // echo $full_links_product.'<br>';
+  echo $full_links_product.'<br>';
   // $full_links_product_array[] = $full_links_product;
 
 //   $sql_product = "INSERT INTO products (id, product_links) VALUES (NULL, '$full_links_product')";
@@ -106,9 +111,7 @@ foreach ($all_links_product as $links) {
 
 //       $document->unloadDocument();
 
-if ($row_cnt == 8) {
-  break;
-  }
+
 
 }
 
